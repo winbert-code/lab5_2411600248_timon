@@ -50,12 +50,15 @@ Laravel MVC implementation of Laboratory Exercise 5, using the suggested theme
    | --- | --- |
    | `winbert@gmail.com` | `winbert906` |
 
+   > Port 8000 is currently served by an Apache virtual host pointing to `public/`. It intercepts malformed URL combinations (for example `///...///`) and returns the dashboard. `php artisan serve` works for normal pages, but PHP's built-in server rejects `...` paths before Laravel can redirect them.
+
 ## Features mapped to the lab exercise
 
 | Lab part | Implementation |
 | --- | --- |
 | Environment & DB config | Laravel 13 project, MySQL `.env`, migrations |
 | Authentication | Laravel `Auth` facade with custom login/register Blade views, hashed passwords, `remember me`, throttle on POST routes, guest/auth middleware |
+| Staff accounts | `StaffController` and `staff/*` views let you add, edit, and remove staff users from the **Staff** page; passwords are hashed and your own account cannot be removed |
 | Models & migrations | `User`, `Brand`, `Category`, `Product`, `InventoryTransaction`. Products belong to a brand and a category via foreign keys; unique SKU, casts, `active`/`inactive` status scopes, `lowStock`/`outOfStock` scopes, `stockStatus()` |
 | Brands & categories | First-class `brands` and `categories` tables with seeders; selectable on product create/edit and filterable on the inventory page |
 | CRUD controller | `app\Http\Controllers\ProductController.php` (resource controller with implicit route binding) |

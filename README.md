@@ -60,10 +60,10 @@ Laravel MVC implementation of Laboratory Exercise 5, using the suggested theme
 | Authentication | Laravel `Auth` facade with custom login/register Blade views, hashed passwords, `remember me`, throttle on POST routes, guest/auth middleware |
 | Users & roles | `UserController` and `users/*` views: add users as **admin** or **staff**, edit roles and passwords, deactivate/restore accounts, and filter by role/status; inactive users cannot log in and you cannot deactivate yourself |
 | Models & migrations | `User`, `Brand`, `Category`, `Product`, `InventoryTransaction`. Products belong to a brand and a category via foreign keys; unique SKU, casts, `active`/`inactive` status scopes, `lowStock`/`outOfStock` scopes, `stockStatus()` |
-| Brands & categories | First-class `brands` and `categories` tables with their own CRUD pages under **Brands** and **Categories**; selectable on product create/edit and filterable on the inventory page |
+| Brands & categories | First-class `brands` and `categories` tables with their own pages under **Brands** and **Categories**; removing an item marks it inactive (never deletes it), and the restore button makes it available for stock again; inactive items are hidden from new-product dropdowns but kept for products already using them |
 | CRUD controller | `app\Http\Controllers\ProductController.php` (resource controller with implicit route binding) |
 | Validation | `StoreProductRequest` / `UpdateProductRequest` with custom messages, SKU uniqueness on create/update, normalized uppercase SKU |
-| Navigation | Dashboard, Inventory (stock overview), Products (CRUD), Categories (CRUD), Brands (CRUD), Users (roles + status) |
+| Navigation | Dashboard, Inventory (stock overview), Products (CRUD + deactivate/restore), Categories (CRUD + deactivate/restore), Brands (CRUD + deactivate/restore), Users (roles + status) |
 | Blade views | `layouts/app`, `layouts/guest`, dashboard, inventory, product index/create/edit/show, category/brand/user CRUD views, reusable `components/stock-badge`, shared form partials |
 | Routes | `routes/web.php`: guest auth routes + auth-protected dashboard, inventory, and resource routes for products, categories, brands and users |
 | Dashboard with real data | `DashboardController` computes product count, low/out-of-stock counts, total inventory value, recent products, category totals, and chart data |
@@ -71,7 +71,7 @@ Laravel MVC implementation of Laboratory Exercise 5, using the suggested theme
 | Theme integration | `public/css/app.css` CSS variables override Bootstrap defaults; same style on auth and app pages |
 | Stock audit trail | `inventory_transactions` table logs initial stock and quantity adjustments, shown on the product detail page |
 | Inactive products | The delete action sets `status` to `inactive` instead of removing rows; products and inventory history stay in the database and can be restored |
-| Testing | Verified login, dashboard statistics, inventory overview, product/category/brand CRUD, user roles, inactive-user login rejection, and deactivate/restore in a browser |
+| Testing | Verified login, dashboard statistics, inventory overview, product/category/brand CRUD, inactive brand/category restore, user roles, inactive-user login rejection, and deactivate/restore in a browser |
 
 ## Important files
 

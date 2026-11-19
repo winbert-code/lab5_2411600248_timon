@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -10,11 +11,25 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $categories = Category::withCount('products')->orderBy('name')->paginate(12);
+        $status = $request->string('status')->toString();
 
-        return view('categories.index', ['categories' => $categories]);
+        if (! in_array($status, [Category::STATUS_ACTIVE, Category::STATUS_INACTIVE], true)) {
+            $status = '';
+        }
+
+        $categories = Category::query()
+            ->withCount(['products as active_products_count' => fn ($query) => $query->where('status', Product::STATUS_ACTIVE)])
+            ->when($status !== '', fn ($query) => $query->where('status', $status))
+            ->orderBy('name')
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('categories.index', [
+            'categories' => $categories,
+            'status' => $status,
+        ]);
     }
 
     public function create(): View
@@ -34,6 +49,7 @@ class CategoryController extends Controller
             'name' => $data['name'],
             'slug' => $this->uniqueSlug($data['name'], $data['slug'] ?? null),
             'description' => $data['description'] ?? null,
+            'status' => Category::STATUS_ACTIVE,
         ]);
 
         return redirect()->route('categories.index')
@@ -65,15 +81,19 @@ class CategoryController extends Controller
 
     public function destroy(Category $category): RedirectResponse
     {
-        if ($category->products()->exists()) {
-            return redirect()->route('categories.index')
-                ->with('error', "{$category->name} cannot be removed because products still use it.");
-        }
-
-        $category->delete();
+        $name = $category->name;
+        $category->deactivate();
 
         return redirect()->route('categories.index')
-            ->with('success', "{$category->name} was removed.");
+            ->with('success', "{$name} was deactivated. Its products were kept and you can restore it anytime.");
+    }
+
+    public function restore(Category $category): RedirectResponse
+    {
+        $category->activate();
+
+        return redirect()->route('categories.index')
+            ->with('success', "{$category->name} was restored and is available for stock again.");
     }
 
     private function uniqueSlug(string $name, ?string $slug, ?int $ignoreId = null): string

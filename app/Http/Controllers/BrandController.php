@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\Product;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -10,11 +11,25 @@ use Illuminate\Support\Str;
 
 class BrandController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $brands = Brand::withCount('products')->orderBy('name')->paginate(12);
+        $status = $request->string('status')->toString();
 
-        return view('brands.index', ['brands' => $brands]);
+        if (! in_array($status, [Brand::STATUS_ACTIVE, Brand::STATUS_INACTIVE], true)) {
+            $status = '';
+        }
+
+        $brands = Brand::query()
+            ->withCount(['products as active_products_count' => fn ($query) => $query->where('status', Product::STATUS_ACTIVE)])
+            ->when($status !== '', fn ($query) => $query->where('status', $status))
+            ->orderBy('name')
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('brands.index', [
+            'brands' => $brands,
+            'status' => $status,
+        ]);
     }
 
     public function create(): View
@@ -34,6 +49,7 @@ class BrandController extends Controller
             'name' => $data['name'],
             'slug' => $this->uniqueSlug($data['name'], $data['slug'] ?? null),
             'description' => $data['description'] ?? null,
+            'status' => Brand::STATUS_ACTIVE,
         ]);
 
         return redirect()->route('brands.index')
@@ -65,15 +81,19 @@ class BrandController extends Controller
 
     public function destroy(Brand $brand): RedirectResponse
     {
-        if ($brand->products()->exists()) {
-            return redirect()->route('brands.index')
-                ->with('error', "{$brand->name} cannot be removed because products still use it.");
-        }
-
-        $brand->delete();
+        $name = $brand->name;
+        $brand->deactivate();
 
         return redirect()->route('brands.index')
-            ->with('success', "{$brand->name} was removed.");
+            ->with('success', "{$name} was deactivated. Its products were kept and you can restore it anytime.");
+    }
+
+    public function restore(Brand $brand): RedirectResponse
+    {
+        $brand->activate();
+
+        return redirect()->route('brands.index')
+            ->with('success', "{$brand->name} was restored and is available for stock again.");
     }
 
     private function uniqueSlug(string $name, ?string $slug, ?int $ignoreId = null): string

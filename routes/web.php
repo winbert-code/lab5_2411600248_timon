@@ -29,7 +29,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::patch('products/{product}/restore', [ProductController::class, 'restore'])->name('products.restore');
     Route::resource('products', ProductController::class);
+    Route::patch('categories/{category}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
     Route::resource('categories', CategoryController::class)->except(['show']);
+    Route::patch('brands/{brand}/restore', [BrandController::class, 'restore'])->name('brands.restore');
     Route::resource('brands', BrandController::class)->except(['show']);
     Route::patch('users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
     Route::resource('users', UserController::class)->except(['show']);

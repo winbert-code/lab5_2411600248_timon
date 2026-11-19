@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Product;
 use Illuminate\Contracts\View\View;
 
@@ -30,6 +31,7 @@ class DashboardController extends Controller
             'recentProducts' => $recentProducts,
             'lowStockProducts' => $lowStockProducts,
             'categories' => $categories,
+            'recentActivity' => ActivityLog::with('user')->latestFirst()->take(5)->get(),
             'chart' => [
                 'labels' => $categories->map(fn ($row) => $row->category?->name ?? 'Uncategorized')->all(),
                 'values' => $categories->pluck('product_count')->map(fn ($count) => (int) $count)->all(),

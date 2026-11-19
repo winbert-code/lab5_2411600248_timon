@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\ActivityLog;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\InventoryTransaction;
@@ -80,6 +81,13 @@ class ProductController extends Controller
             return $product;
         });
 
+        ActivityLog::record(
+            ActivityLog::MODULE_PRODUCT,
+            ActivityLog::ACTION_CREATED,
+            "{$product->name} ({$product->sku}) was added with {$product->quantity} units.",
+            $product,
+        );
+
         return redirect()->route('products.show', $product)
             ->with('success', "{$product->name} was added to the inventory.");
     }
@@ -120,6 +128,13 @@ class ProductController extends Controller
             }
         });
 
+        ActivityLog::record(
+            ActivityLog::MODULE_PRODUCT,
+            ActivityLog::ACTION_UPDATED,
+            "{$product->name} was updated. Stock is now {$product->quantity} units.",
+            $product,
+        );
+
         return redirect()->route('products.show', $product)
             ->with('success', "{$product->name} was updated.");
     }
@@ -129,6 +144,13 @@ class ProductController extends Controller
         $name = $product->name;
         $product->deactivate();
 
+        ActivityLog::record(
+            ActivityLog::MODULE_PRODUCT,
+            ActivityLog::ACTION_DEACTIVATED,
+            "{$name} was marked inactive. Its stock record was kept.",
+            $product,
+        );
+
         return redirect()->route('products.index')
             ->with('success', "{$name} was marked inactive. Its inventory record and stock history were kept.");
     }
@@ -137,6 +159,13 @@ class ProductController extends Controller
     {
         $name = $product->name;
         $product->activate();
+
+        ActivityLog::record(
+            ActivityLog::MODULE_PRODUCT,
+            ActivityLog::ACTION_RESTORED,
+            "{$name} was restored to active stock.",
+            $product,
+        );
 
         return redirect()->route('products.index')
             ->with('success', "{$name} is active again.");

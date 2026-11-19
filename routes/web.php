@@ -28,28 +28,6 @@ Route::middleware('auth')->group(function () {
 
 /*
  * Malformed URLs such as /products//////.......////// should not dead-end at a
- * 404. Send them back to the page the user was on instead. External referrers,
- * another malformed URL, and the fallback target itself are rejected to avoid
- * redirect loops.
+ * 404. Always send them back to the dashboard instead.
  */
-Route::fallback(function () {
-    $safeTarget = route('dashboard');
-    $previous = url()->previous();
-    $base = rtrim(url('/'), '/');
-
-    if (! is_string($previous) || $previous === '' || $previous === url()->full()) {
-        return redirect()->to($safeTarget);
-    }
-
-    if ($previous !== $base && ! str_starts_with($previous, $base.'/')) {
-        return redirect()->to($safeTarget);
-    }
-
-    $path = parse_url($previous, PHP_URL_PATH) ?: '';
-
-    if (preg_match('#/{2,}|\.{2,}#', $path)) {
-        return redirect()->to($safeTarget);
-    }
-
-    return redirect()->to($previous);
-});
+Route::fallback(fn () => redirect()->route('dashboard'));

@@ -2,21 +2,30 @@
     <div class="col-md-6">
         <label for="name" class="form-label">Full name <span class="text-danger">*</span></label>
         <input id="name" name="name" type="text" class="form-control @error('name') is-invalid @enderror"
-               value="{{ old('name', $staffMember->name) }}" autofocus>
+               value="{{ old('name', $user->name) }}" autofocus>
         @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     <div class="col-md-6">
         <label for="email" class="form-label">Email address <span class="text-danger">*</span></label>
         <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror"
-               value="{{ old('email', $staffMember->email) }}" placeholder="staff@bytestock.com">
+               value="{{ old('email', $user->email) }}" placeholder="staff@bytestock.com">
         @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="col-md-6">
+        <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
+        <select id="role" name="role" class="form-select @error('role') is-invalid @enderror">
+            <option value="staff" {{ old('role', $user->role ?? 'staff') === 'staff' ? 'selected' : '' }}>Staff</option>
+            <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Admin</option>
+        </select>
+        @error('role') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     <div class="col-md-6">
         <label for="password" class="form-label">
             Password
-            @if ($staffMember->exists)<span class="text-muted small">(leave blank to keep current)</span>@else<span class="text-danger">*</span>@endif
+            @if ($user->exists)<span class="text-muted small">(leave blank to keep current)</span>@else<span class="text-danger">*</span>@endif
         </label>
         <input id="password" name="password" type="password" class="form-control @error('password') is-invalid @enderror"
                autocomplete="new-password">
@@ -32,7 +41,7 @@
 
 <div class="d-flex gap-2 mt-4">
     <button type="submit" class="btn btn-primary">
-        <i class="bi bi-save"></i> {{ $staffMember->exists ? 'Save Changes' : 'Add Staff' }}
+        <i class="bi bi-save"></i> {{ $user->exists ? 'Save Changes' : 'Add User' }}
     </button>
-    <a href="{{ route('staff.index') }}" class="btn btn-outline-secondary">Cancel</a>
+    <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">Cancel</a>
 </div>

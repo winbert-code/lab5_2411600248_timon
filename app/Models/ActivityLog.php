@@ -13,6 +13,10 @@ class ActivityLog extends Model
 
     public const MODULE_AUTH = 'Auth';
 
+    public const MODULE_DASHBOARD = 'Dashboard';
+
+    public const MODULE_INVENTORY = 'Inventory';
+
     public const MODULE_PRODUCT = 'Product';
 
     public const MODULE_CATEGORY = 'Category';
@@ -21,7 +25,15 @@ class ActivityLog extends Model
 
     public const MODULE_USER = 'User';
 
+    public const MODULE_ACTIVITY = 'Activity Log';
+
+    public const MODULE_SYSTEM = 'System';
+
     public const ACTION_LOGGED_IN = 'Logged in';
+
+    public const ACTION_FAILED_LOGIN = 'Failed login';
+
+    public const ACTION_INACTIVE_LOGIN = 'Inactive login';
 
     public const ACTION_LOGGED_OUT = 'Logged out';
 
@@ -35,22 +47,46 @@ class ActivityLog extends Model
 
     public const ACTION_RESTORED = 'Restored';
 
+    public const ACTION_VIEWED = 'Viewed';
+
+    public const ACTION_SEARCHED = 'Searched';
+
+    public const ACTION_FILTERED = 'Filtered';
+
+    public const ACTION_STOCK_ADJUSTED = 'Stock adjusted';
+
+    public const ACTION_BLOCKED = 'Blocked';
+
+    public const ACTION_REDIRECTED = 'Redirected';
+
     public const MODULES = [
         self::MODULE_AUTH,
+        self::MODULE_DASHBOARD,
+        self::MODULE_INVENTORY,
         self::MODULE_PRODUCT,
         self::MODULE_CATEGORY,
         self::MODULE_BRAND,
         self::MODULE_USER,
+        self::MODULE_ACTIVITY,
+        self::MODULE_SYSTEM,
     ];
 
     public const ACTIONS = [
         self::ACTION_LOGGED_IN,
+        self::ACTION_FAILED_LOGIN,
+        self::ACTION_INACTIVE_LOGIN,
         self::ACTION_LOGGED_OUT,
         self::ACTION_REGISTERED,
         self::ACTION_CREATED,
         self::ACTION_UPDATED,
         self::ACTION_DEACTIVATED,
         self::ACTION_RESTORED,
+        self::ACTION_VIEWED,
+        self::ACTION_SEARCHED,
+        self::ACTION_FILTERED,
+        self::ACTION_STOCK_ADJUSTED,
+        self::ACTION_BLOCKED,
+        self::ACTION_REDIRECTED,
     ];
 
     protected $fillable = [
@@ -116,8 +152,9 @@ class ActivityLog extends Model
     public function badgeClass(): string
     {
         return match ($this->action) {
-            self::ACTION_DEACTIVATED, self::ACTION_LOGGED_OUT => 'badge-inactive',
-            self::ACTION_UPDATED => 'bg-secondary',
+            self::ACTION_DEACTIVATED, self::ACTION_LOGGED_OUT, self::ACTION_BLOCKED => 'badge-inactive',
+            self::ACTION_FAILED_LOGIN, self::ACTION_INACTIVE_LOGIN => 'badge-out',
+            self::ACTION_UPDATED, self::ACTION_VIEWED, self::ACTION_SEARCHED, self::ACTION_FILTERED, self::ACTION_REDIRECTED => 'bg-secondary',
             default => 'bg-success',
         };
     }

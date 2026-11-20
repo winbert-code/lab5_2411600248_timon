@@ -6,16 +6,20 @@
     @php
         $moduleIcons = [
             'Auth' => 'bi-shield-lock',
+            'Dashboard' => 'bi-speedometer2',
+            'Inventory' => 'bi-clipboard-data',
             'Product' => 'bi-box-seam',
             'Category' => 'bi-tags',
             'Brand' => 'bi-patch-check',
             'User' => 'bi-people',
+            'Activity Log' => 'bi-clock-history',
+            'System' => 'bi-activity',
         ];
     @endphp
 
     <div class="mb-4">
         <h1 class="h3 fw-bold mb-1">Activity Log</h1>
-        <p class="text-muted mb-0">Track sign-ins and every inventory change made in ByteStock.</p>
+        <p class="text-muted mb-0">Track every page visit, search, sign-in and inventory change made in ByteStock.</p>
     </div>
 
     <div class="row g-3 mb-4">

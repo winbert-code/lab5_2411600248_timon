@@ -119,6 +119,13 @@ class UserController extends Controller
     public function destroy(User $user): RedirectResponse
     {
         if ($user->id === auth()->id()) {
+            ActivityLog::record(
+                ActivityLog::MODULE_USER,
+                ActivityLog::ACTION_BLOCKED,
+                auth()->user()->name.' tried to deactivate their own account.',
+                $user,
+            );
+
             return redirect()->route('users.index')
                 ->with('error', 'You cannot deactivate your own account.');
         }

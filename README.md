@@ -63,14 +63,14 @@ Laravel MVC implementation of Laboratory Exercise 5, using the suggested theme
 | Brands & categories | First-class `brands` and `categories` tables with their own pages under **Brands** and **Categories**; removing an item marks it inactive (never deletes it), and the restore button makes it available for stock again; inactive items are hidden from new-product dropdowns but kept for products already using them |
 | CRUD controller | `app\Http\Controllers\ProductController.php` (resource controller with implicit route binding) |
 | Validation | `StoreProductRequest` / `UpdateProductRequest` with custom messages, SKU uniqueness on create/update, normalized uppercase SKU |
-| Navigation | Dashboard, Activity Log, Inventory (stock overview), Products (CRUD + deactivate/restore), Categories (CRUD + deactivate/restore), Brands (CRUD + deactivate/restore), Users (roles + status) |
+| Navigation | Dashboard (products, categories, brands at a glance), Activity Log, Inventory (stock overview), Products (CRUD + deactivate/restore), Categories (CRUD + deactivate/restore), Brands (CRUD + deactivate/restore), Users (roles + status) |
 | Blade views | `layouts/app`, `layouts/guest`, dashboard, activity log, inventory, product index/create/edit/show, category/brand/user CRUD views, reusable `components/stock-badge`, shared form partials |
 | Routes | `routes/web.php`: guest auth routes + auth-protected dashboard, activity log, inventory, and resource routes for products, categories, brands and users |
-| Dashboard with real data | `DashboardController` computes product count, low/out-of-stock counts, total inventory value, recent products, category totals, chart data, and recent activity |
+| Dashboard with real data | `DashboardController` computes product/category/brand counts, low/out-of-stock counts, total inventory value, recent products, category and brand summaries, chart data, and recent activity |
 | Seeder | `ProductSeeder` inserts 20 realistic computer parts across 10 categories, including low-stock and out-of-stock examples |
 | Theme integration | `public/css/app.css` CSS variables override Bootstrap defaults; same style on auth and app pages |
 | Stock audit trail | `inventory_transactions` table logs initial stock and quantity adjustments, shown on the product detail page |
-| Activity log | `activity_logs` table records sign-ins, registrations, and every create/update/deactivate/restore action on products, categories, brands and users; filterable on the **Activity Log** page and summarized on the dashboard |
+| Activity log | `activity_logs` table monitors page visits, searches and filters, sign-ins (including failed and inactive attempts), sign-outs, registrations, blocked self-deactivation, stock adjustments, and every create/update/deactivate/restore action on products, categories, brands and users; recorded by `MonitorActivity` middleware plus controllers, filterable on the **Activity Log** page and summarized on the dashboard |
 | Inactive products | The delete action sets `status` to `inactive` instead of removing rows; products and inventory history stay in the database and can be restored |
 | Testing | Verified login, dashboard statistics, inventory overview, product/category/brand CRUD, inactive brand/category restore, user roles, inactive-user login rejection, deactivate/restore, and activity-log filters in a browser |
 

@@ -111,8 +111,9 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product): RedirectResponse
     {
         $quantityBefore = $product->quantity;
+        $difference = 0;
 
-        DB::transaction(function () use ($request, $product, $quantityBefore) {
+        DB::transaction(function () use ($request, $product, $quantityBefore, &$difference) {
             $product->update($request->validated());
 
             $difference = $product->quantity - $quantityBefore;
@@ -127,6 +128,15 @@ class ProductController extends Controller
                 ]);
             }
         });
+
+        if ($difference !== 0) {
+            ActivityLog::record(
+                ActivityLog::MODULE_INVENTORY,
+                ActivityLog::ACTION_STOCK_ADJUSTED,
+                "{$product->name} stock {$this->direction($difference)} by ".abs($difference)." units ({$quantityBefore} to {$product->quantity}).",
+                $product,
+            );
+        }
 
         ActivityLog::record(
             ActivityLog::MODULE_PRODUCT,
@@ -169,6 +179,11 @@ class ProductController extends Controller
 
         return redirect()->route('products.index')
             ->with('success', "{$name} is active again.");
+    }
+
+    private function direction(int $difference): string
+    {
+        return $difference > 0 ? 'increased' : 'decreased';
     }
 
     /**

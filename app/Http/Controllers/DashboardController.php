@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Contracts\View\View;
 
@@ -17,7 +19,7 @@ class DashboardController extends Controller
             ->selectRaw('COALESCE(SUM(quantity * unit_price), 0) as inventory_value')
             ->first();
 
-        $recentProducts = Product::active()->with('category')->latest()->orderByDesc('id')->take(5)->get();
+        $recentProducts = Product::active()->with(['category', 'brand'])->latest()->orderByDesc('id')->take(5)->get();
         $lowStockProducts = Product::active()->with('category')->lowStock()->orderBy('quantity')->orderBy('id')->take(5)->get();
         $categories = Product::active()
             ->selectRaw('category_id, COUNT(*) as product_count, SUM(quantity) as units')
@@ -26,11 +28,32 @@ class DashboardController extends Controller
             ->with('category')
             ->get();
 
+        $activeCategoryCount = Category::active()->count();
+        $activeBrandCount = Brand::active()->count();
+
+        $categoryList = Category::active()
+            ->withCount(['products' => fn ($query) => $query->where('status', Product::STATUS_ACTIVE)])
+            ->orderByDesc('products_count')
+            ->orderBy('name')
+            ->take(5)
+            ->get();
+
+        $brandList = Brand::active()
+            ->withCount(['products' => fn ($query) => $query->where('status', Product::STATUS_ACTIVE)])
+            ->orderByDesc('products_count')
+            ->orderBy('name')
+            ->take(5)
+            ->get();
+
         return view('dashboard.index', [
             'stats' => $stats,
             'recentProducts' => $recentProducts,
             'lowStockProducts' => $lowStockProducts,
             'categories' => $categories,
+            'activeCategoryCount' => $activeCategoryCount,
+            'activeBrandCount' => $activeBrandCount,
+            'categoryList' => $categoryList,
+            'brandList' => $brandList,
             'recentActivity' => ActivityLog::with('user')->latestFirst()->take(5)->get(),
             'chart' => [
                 'labels' => $categories->map(fn ($row) => $row->category?->name ?? 'Uncategorized')->all(),

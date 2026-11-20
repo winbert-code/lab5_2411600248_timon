@@ -14,7 +14,7 @@
     </div>
 
     <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-lg-4 col-xl-2">
             <div class="card stat-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
@@ -29,7 +29,37 @@
             </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-lg-4 col-xl-2">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="stat-label mb-1">Categories</p>
+                            <h2 class="stat-value mb-0">{{ number_format($activeCategoryCount) }}</h2>
+                        </div>
+                        <span class="stat-icon icon-success"><i class="bi bi-tags"></i></span>
+                    </div>
+                    <a href="{{ route('categories.index') }}" class="stat-link">View categories <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-4 col-xl-2">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="stat-label mb-1">Brands</p>
+                            <h2 class="stat-value mb-0">{{ number_format($activeBrandCount) }}</h2>
+                        </div>
+                        <span class="stat-icon icon-success"><i class="bi bi-patch-check"></i></span>
+                    </div>
+                    <a href="{{ route('brands.index') }}" class="stat-link">View brands <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-4 col-xl-2">
             <div class="card stat-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
@@ -44,7 +74,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-lg-4 col-xl-2">
             <div class="card stat-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
@@ -59,7 +89,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-lg-4 col-xl-2">
             <div class="card stat-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
@@ -75,7 +105,90 @@
         </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4 mb-4">
+        <div class="col-lg-4">
+            <div class="card app-card h-100">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-start">
+                    <div>
+                        <h2 class="h5 fw-bold mb-0">Products</h2>
+                        <p class="text-muted small mb-0">Recently added to inventory.</p>
+                    </div>
+                    <a href="{{ route('products.index') }}" class="small text-decoration-none">View all</a>
+                </div>
+                <div class="list-group list-group-flush px-4">
+                    @forelse ($recentProducts as $product)
+                        <a href="{{ route('products.show', $product) }}"
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+                            <span class="me-2">
+                                <span class="fw-semibold d-block">{{ $product->name }}</span>
+                                <span class="small text-muted">
+                                    {{ $product->category?->name ?? 'Uncategorized' }} &middot;
+                                    {{ $product->brand?->name ?? 'No brand' }}
+                                </span>
+                            </span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                    @empty
+                        <p class="text-muted px-0 py-3 mb-0">No products have been added yet.</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card app-card h-100">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-start">
+                    <div>
+                        <h2 class="h5 fw-bold mb-0">Categories</h2>
+                        <p class="text-muted small mb-0">Stocked computer part groups.</p>
+                    </div>
+                    <a href="{{ route('categories.index') }}" class="small text-decoration-none">View all</a>
+                </div>
+                <div class="list-group list-group-flush px-4">
+                    @forelse ($categoryList as $category)
+                        <a href="{{ route('categories.edit', $category) }}"
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+                            <span class="me-2">
+                                <span class="fw-semibold d-block">{{ $category->name }}</span>
+                                <span class="small text-muted">{{ $category->description ?: 'No description' }}</span>
+                            </span>
+                            <span class="stock-badge badge-in">{{ $category->products_count }} products</span>
+                        </a>
+                    @empty
+                        <p class="text-muted px-0 py-3 mb-0">No active categories yet.</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card app-card h-100">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-start">
+                    <div>
+                        <h2 class="h5 fw-bold mb-0">Brands</h2>
+                        <p class="text-muted small mb-0">Manufacturers in the inventory.</p>
+                    </div>
+                    <a href="{{ route('brands.index') }}" class="small text-decoration-none">View all</a>
+                </div>
+                <div class="list-group list-group-flush px-4">
+                    @forelse ($brandList as $brand)
+                        <a href="{{ route('brands.edit', $brand) }}"
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+                            <span class="me-2">
+                                <span class="fw-semibold d-block">{{ $brand->name }}</span>
+                                <span class="small text-muted">{{ $brand->description ?: 'No description' }}</span>
+                            </span>
+                            <span class="stock-badge badge-in">{{ $brand->products_count }} products</span>
+                        </a>
+                    @empty
+                        <p class="text-muted px-0 py-3 mb-0">No active brands yet.</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
         <div class="col-lg-7">
             <div class="card app-card h-100">
                 <div class="card-header bg-transparent border-0 pt-4 px-4">
@@ -110,49 +223,6 @@
                     @empty
                         <p class="text-muted px-0 py-3 mb-0">No low stock items. Everything is well stocked.</p>
                     @endforelse
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12">
-            <div class="card app-card">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <h2 class="h5 fw-bold mb-0">Recently added products</h2>
-                    <p class="text-muted small mb-0">The latest items saved to the database.</p>
-                </div>
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>SKU</th>
-                                <th>Category</th>
-                                <th class="text-end">Stock</th>
-                                <th>Status</th>
-                                <th>Added</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($recentProducts as $product)
-                                <tr>
-                                    <td>
-                                        <a href="{{ route('products.show', $product) }}" class="text-decoration-none fw-semibold">
-                                            {{ $product->name }}
-                                        </a>
-                                    </td>
-                                    <td><code>{{ $product->sku }}</code></td>
-                                    <td>{{ $product->category?->name ?? '—' }}</td>
-                                    <td class="text-end">{{ number_format($product->quantity) }}</td>
-                                    <td><x-stock-badge :status="$product->availabilityStatus()" /></td>
-                                    <td>{{ $product->created_at?->diffForHumans() }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">No products have been added yet.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
